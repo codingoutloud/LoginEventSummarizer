@@ -5,7 +5,7 @@
 config-secrets.sh
 
 ## generated - could choose to check-in so we have history
-ipcc.csv
+#ipcc.csv
 
 ## temp files
 bin/
