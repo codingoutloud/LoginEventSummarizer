@@ -26,7 +26,7 @@ Also considered some required and optional environment variables, but those can 
 
 ## .NET 6 Depoyment Model
 
-Ease of deployment matters. The .NET 6 [single file apps feature](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish#arguments) allows creation of a single-file distributable executable that does not have any dependency on the .NET runtime being installed. One way to use this feature is to build the application accordingly:
+Ease of deployment matters. The .NET 6 [single file apps feature](https://docs.microsoft.com/dotnet/core/tools/dotnet-publish#arguments) allows creation of a single-file distributable executable that does not have any dependency on the .NET runtime being installed. One way to use this feature is to build the application accordingly:
 
 `dotnet publish -p:PublishSingleFile=true -r win-x64 -c Release --self-contained true -p:PublishTrimmed=true`
 
@@ -34,7 +34,7 @@ More examples can be found [here](https://github.com/dotnet/designs/blob/main/ac
 
 Some of the commandline arguments apply to `dotnet publish` directly, while others are passed thru to MSBuild.
 
-There is an [RID catalog](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog) where this value was found (for Big Sur): `osx.11.0-x64`. There are also ARM values for the new Macbooks with M1 chipset.
+There is an [RID catalog](https://docs.microsoft.com/dotnet/core/rid-catalog) where this value was found (for Big Sur): `osx.11.0-x64`. There are also ARM values for the new Macbooks with M1 chipset.
 
 ### Create Single-file Deployment for Windows
 

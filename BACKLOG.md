@@ -12,5 +12,5 @@
 - ⬜️ &nbsp; Consider if Record or Struct datatype might be more natural for AzureMapLocation (currently uses 'class')
 - ⬜️ &nbsp; Design a more proper IpAddressCategorizer: current iteration is messy, uneven, perhaps unclear goal
 - ⬜️ &nbsp; Consider retiring this BACKLOG file and switching to Github Issues
-- ⬜️ &nbsp; Solve the "Link ... contains a language reference: undefined" markdown warning (currently 2 instances)
+- ✅ &nbsp; Solve the "Link ... contains a language reference: undefined" markdown warning (currently 2 instances) ➜ Work-around was to either change the .../us-en/... to .../us-EN/... or remove it from the URL. Seems like a bug in the VS Code markdown parser/linter?
 - ⬜️ &nbsp; Reconsider client-side secret approach (currently config-secrets.sh stores secrets in the clear - but of course is not checked in with code)
