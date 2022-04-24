@@ -6,6 +6,7 @@
 - ⬜️ &nbsp; Parameterize the optional output CSV filename (currently is hard-coded)
 - ⬜️ &nbsp; Parameterize the optional time range considered for summarization (currently is hard-coded)
 - ⬜️ &nbsp; Enhance stats.sh to not hard-code the CSV filename (other scripts use environment variable)
+- ⬜️ &nbsp; Consider modifying tool to first generate details.csv, then derive all summary files from that CSV
 - ⬜️ &nbsp; Enhance to support CSV file generation that sums up the number of security events by IP
 - ⬜️ &nbsp; Enhance to support CSV file generation that sums up the number of security events by country
 - ⬜️ &nbsp; Enhance to support CSV file generation that outputs the individual security events
@@ -14,3 +15,5 @@
 - ⬜️ &nbsp; Consider retiring this BACKLOG file and switching to Github Issues
 - ✅ &nbsp; Solve the "Link ... contains a language reference: undefined" markdown warning (currently 2 instances) ➜ Work-around was to either change the .../us-en/... to .../us-EN/... or remove it from the URL. Seems like a bug in the VS Code markdown parser/linter?
 - ⬜️ &nbsp; Reconsider client-side secret approach (currently config-secrets.sh stores secrets in the clear - but of course is not checked in with code)
+- ⬜️ &nbsp; Replace LogToConsole with a proper logging library (and possibly also direct writing to output file)
+- ⬜️ &nbsp; Replace this utility with an [Azure Data Factory](https://azure.microsoft.com/services/data-factory/) transform.

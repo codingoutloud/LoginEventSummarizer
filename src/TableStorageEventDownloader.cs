@@ -1,8 +1,13 @@
+#define VERBOSE
+
 using System;
+using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -52,6 +57,13 @@ namespace EventDownloader
 
       static int x = 0;
 
+      ///<Summary>
+      /// Azure Table Storage ("Tables") is a wide-column NoSQL database. The Tables data model
+      /// (<see href="https://docs.microsoft.com/en-us/rest/api/storageservices/understanding-the-table-service-data-model">documented here</see>)
+      /// refers to entries (or "rows" to use SQL analogy) as "Entities" and
+      /// each entity is made up of "Properties" (3 standard ones + up to 252 custom ones).
+      /// This method parses the properties for Event Log types it knows about and outputs findings as one CSV row.
+      ///</Summary>
       public async Task ParseXmlProperty(DateTimeOffset precise, string xml)
       {
          XDocument xdoc = XDocument.Parse(xml);
@@ -117,14 +129,14 @@ namespace EventDownloader
 #if VERBOSE
                   if (Console.IsOutputRedirected)
                   {
-                     LogToConsole($"IP/CC was added [FIRST ENCOUNTER] {ipAddress.Value}, {ipCountry}>");
+                     LogToConsole($"IP/CC was added [IP FIRST ENCOUNTER] {ipAddress.Value}, {ipCountry}>");
                   }
 #endif
                }
                else
                {
                   // should only happen if CC not available for this IP
-                  LogToConsole($"IP/CC not added [CC LOOKUP FAILED] {ipAddress.Value} <{IpCountryDictionary[ipAddress.Value]}>      [{x++}/{IpCountryDictionary.Count}]", ConsoleColor.Red);
+                  LogToConsole($"IP/CC not added [IP CC LOOKUP FAILED] {ipAddress.Value} <{IpCountryDictionary[ipAddress.Value]}>      [{x++}/{IpCountryDictionary.Count}]", ConsoleColor.Red);
                }
             }
             else
@@ -146,6 +158,10 @@ namespace EventDownloader
          Console.ForegroundColor = fg;
       }
 
+
+
+
+
       public async Task GetAttackerDataAsCsvIpToCountryMap(int year, int month)
       {
          int monthUpperBound = month == 12 ? 1 : month + 1;
@@ -166,9 +182,24 @@ namespace EventDownloader
             const int failedLoginAttemptEventId = 4625;
             var nullSpan = new TimeSpan(0);
             var startDate = new DateTimeOffset(2022, 1, 1, 0, 0, 0, 0, nullSpan);
-            var endDate = new DateTimeOffset(2022, 4, 1, 0, 0, 0, 0, nullSpan);
+            var endDate = new DateTimeOffset(2022, 1, 2, 0, 0, 0, 0, nullSpan);
+            ////var endDate = new DateTimeOffset(2022, 4, 1, 0, 0, 0, 0, nullSpan);
 
-            var filter = $"(EventId eq {failedLoginAttemptEventId}) and (PreciseTimeStamp ge datetime'{year}-{month:D2}-01T00:00:00.0000000Z') and (PreciseTimeStamp lt datetime'{yearUpperBound}-{(monthUpperBound):D2}-01T00:00:00.0000000Z')";
+
+            month = 1;
+            monthUpperBound = month;
+            var day = 2;
+
+            var filter = $"(EventId eq {failedLoginAttemptEventId}) and (PreciseTimeStamp ge datetime'{year}-{month:D2}-01T00:00:00.0000000Z') and (PreciseTimeStamp lt datetime'{yearUpperBound}-{(monthUpperBound):D2}-{day:D2}T00:00:00.0000000Z')";
+            ////var filter = $"(EventId eq {failedLoginAttemptEventId}) and (PreciseTimeStamp ge datetime'{year}-{month:D2}-01T00:00:00.0000000Z') and (PreciseTimeStamp lt datetime'{yearUpperBound}-{(monthUpperBound):D2}-01T00:00:00.0000000Z')";
+
+            LogToConsole($"FILTER ➜ {filter}");
+
+            monthUpperBound = 4;
+            day = 1;
+
+            filter = $"(EventId eq {failedLoginAttemptEventId}) and (PreciseTimeStamp ge datetime'{year}-{month:D2}-01T00:00:00.0000000Z') and (PreciseTimeStamp lt datetime'{yearUpperBound}-{(monthUpperBound):D2}-{day:D2}T00:00:00.0000000Z')";
+            LogToConsole($"FILTER ➜ {filter}");
 
             Pageable<Azure.Data.Tables.TableEntity> entities = tableClient.Query<Azure.Data.Tables.TableEntity>(filter: filter);
 

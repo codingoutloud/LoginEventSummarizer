@@ -1,4 +1,5 @@
-﻿using System.CommandLine;
+﻿#define VERBOSE
+using System.CommandLine;
 
 var tableStorageCSOption = new Option<string>(
    "--tablecs",
@@ -48,11 +49,15 @@ rootCommand.Description = "The LoginEventSummarizer reads login events from the 
 rootCommand.SetHandler(async (string tablecs, string blobcs, string mapkey, string csv) =>
 {
 #if VERBOSE
-   downloader.LogToConsole($"REQUIRED Azure Table Storage connection string = {tablecs ?? "<null>"}");
-   downloader.LogToConsole($"REQUIRED Azure Blob Storage connection string = {blobcs ?? "<null>"}");
-   downloader.LogToConsole($"REQUIRED Azure API Key = {mapkey ?? "<null>"}");
+   var fg = Console.ForegroundColor;
+   Console.ForegroundColor = ConsoleColor.DarkRed;
+   Console.Error.WriteLine($"REQUIRED Azure Table Storage connection string = {tablecs ?? "<null>"}");
+   Console.Error.WriteLine($"REQUIRED Azure Blob Storage connection string = {blobcs ?? "<null>"}");
+   Console.Error.WriteLine($"REQUIRED Azure API Key = {mapkey ?? "<null>"}");
    //downloader.LogToConsole($"The value for --file-option = {f?.FullName ?? "<null>"}");
-   downloader.LogToConsole($"OPTIONAL The CSV filename = {csv} (defaults to 'ipcc.csv')");
+   Console.Error.WriteLine($"OPTIONAL The CSV filename = {csv} (defaults to 'ipcc.csv')");
+   Console.Error.Flush();
+   Console.ForegroundColor = fg;
 #endif
 
    // --table-cs $AZURE_TABLE_STORAGE_CONNECTION_STRING --blob-cs $AZURE_BLOB_STORAGE_CONNECTION_STRING --map-key $AZURE_MAP_API_KEY > $CSV_FILENAME
@@ -86,16 +91,22 @@ rootCommand.SetHandler(async (string tablecs, string blobcs, string mapkey, stri
    }
 
 #if VERBOSE
-   downloader.LogToConsole($"{System.AppDomain.CurrentDomain.FriendlyName}: Starting at {DateTime.Now} - VERBOSE mode");
+   downloader.LogToConsole($"Started the execution of {System.AppDomain.CurrentDomain.FriendlyName} at {DateTime.Now} - VERBOSE mode");
 #else
-   downloader.LogToConsole($"{System.AppDomain.CurrentDomain.FriendlyName}: Starting at {DateTime.Now}");
+   downloader.LogToConsole($"Started the execution of {System.AppDomain.CurrentDomain.FriendlyName} at {DateTime.Now}");
 #endif
 
    // TODO: move date rangest to command line or elsewhere
-   await downloader.GetAttackerDataAsCsvIpToCountryMap(2022, 3);
+   ////////await downloader.GetAttackerDataAsCsvIpToCountryMap(2022, 3);
 
-   downloader.LogToConsole($"{System.AppDomain.CurrentDomain.FriendlyName}: Ending at {DateTime.Now}");
-   downloader.LogToConsole($"{System.AppDomain.CurrentDomain.FriendlyName}: Elapsed execution time {sw.Elapsed.TotalMinutes} minutes");
+   var exporter = new EventDownloader.TableStorageEventExporter(tablecs, mapkey);
+   var startAtDate = new DateOnly(2022, 1, 1);
+   var endByDate = new DateOnly(2022, 4, 1);
+   var detailsPath = "./details.csv";
+   await exporter.ExportToCsv(startAtDate, endByDate, detailsPath);
+
+   exporter.LogToConsole($"Completed the execution of {System.AppDomain.CurrentDomain.FriendlyName} at {DateTime.Now}");
+   exporter.LogToConsole($"Elapsed execution time for {System.AppDomain.CurrentDomain.FriendlyName}: {sw.Elapsed.TotalMinutes} minutes");
 
 }, tableStorageCSOption, blobStorageCSOption, azureMapApiKeyOption, csvFilenameOption);
 

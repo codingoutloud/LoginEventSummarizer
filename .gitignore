@@ -1,7 +1,7 @@
 ## .gitignore
 ## directives reference: https://gist.github.com/jstnlvns/ebaa046fae16543cc9efc7f24bcd0e31#file-git-gitignore-md
 
-## one option for local
+## one option for local secret handling
 config-secrets.sh
 
 ## generated - could choose to check-in so we have history
