@@ -1,6 +1,6 @@
 # LoginEventSummarizer
 
-The LoginEventSummarizer command line tool analyzes Azure Table Storage-hosted login-related Windows Event Log events and outputs a CSV summary.
+The LoginEventSummarizer command line tool analyzes Azure Table Storage-hosted login-related Windows Event Log events and outputs summarized data in the form of two CSV files. Data is also enriched to include the country from which each IP address originates.
 
 ## Input
 
@@ -13,6 +13,8 @@ The focus is on IP addresses associated with failed RDP login attempts. You aim 
 This tool outputs two CSV files. You aim this tool at an Azure Storage account containing Azure Diagnostics logs in the expected format and it will parse out key fields (e.g., source IP data) and organize and enrich it by providing for each IP address the ISO country codes for its country of registration/origin. The first file output (default name: ipcc.csv) is a two-column CSV with the IP address followed by the ISO country code. The second file output (default name: details.csv) contains more details, including one row for each failed RDP login security event.
 
 The ISO country codes are sourced using an Azure Maps API that returns the ISO country code for a given IP address; note that this data may not be 100% reliable and may not definitively correlate with the country from which any given security event or attack originated.
+
+The IP address + country code CSV file (default name: ipcc.csv) can be imported into Kusto queries to dynamically map IP addresses to country codes. The full dettail CSV file (default name: details.csv) can be imported into other data stores (such as a SQL DB) or used as is for analysis.
 
 ## Optional Upload to a Hosting location
 
